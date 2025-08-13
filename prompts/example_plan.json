@@ -1,0 +1,32 @@
+[
+  {
+    "task_id": 1,
+    "action": "read_file",
+    "target": "sandbox/src/server.js",
+    "description": "Đọc nội dung file server hiện tại để hiểu cấu trúc code và các route đang có."
+  },
+  {
+    "task_id": 2,
+    "action": "edit_file",
+    "target": "sandbox/src/server.js",
+    "description": "Thêm một route API mới '/api/users' để xử lý yêu cầu GET, trả về một danh sách người dùng giả lập."
+  },
+  {
+    "task_id": 3,
+    "action": "shell_command",
+    "command": "npm install express",
+    "description": "Kiểm tra và cài đặt thư viện 'express' nếu cần thiết."
+  },
+  {
+    "task_id": 4,
+    "action": "run_test",
+    "target": "api_tests",
+    "description": "Chạy lại các bài test API để đảm bảo không có lỗi nào phát sinh sau khi thay đổi."
+  },
+  {
+    "task_id": 5,
+    "action": "log_result",
+    "message": "Hoàn thành việc thêm API lấy danh sách người dùng.",
+    "description": "Ghi log kết quả cuối cùng."
+  }
+]
