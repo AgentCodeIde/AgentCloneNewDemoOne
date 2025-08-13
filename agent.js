@@ -235,33 +235,32 @@ async function deployAfterPass() {
     console.log("🚀 Deploy step: committing and pushing code...");
 
     await git.add(".");
-    // Commit “rỗng” sẽ không tạo nếu không có thay đổi — OK
-    try {
-      await git.commit(`Auto-deploy: ${new Date().toISOString()}`);
-    } catch (_) {}
+    try { await git.commit(`Auto-deploy: ${new Date().toISOString()}`); } catch (_) {}
 
-    // Branch mục tiêu
+    // Branch dùng để push code (staging theo default)
     const DEPLOY_BRANCH = process.env.DEPLOY_BRANCH || "staging";
-
     await git.push("origin", DEPLOY_BRANCH);
     console.log(`✅ Code pushed to ${DEPLOY_BRANCH} branch.`);
 
-    // Nếu có script deploy tại root thì chạy
-    if (fs.existsSync("deploy.sh")) {
-      console.log("📦 Running deploy.sh...");
-      const sh = process.platform === "win32" ? "bash" : "bash";
-      const res = spawnSync(sh, ["deploy.sh"], { stdio: "inherit" });
-      if (res.status !== 0) {
-        throw new Error(`deploy.sh exited with code ${res.status}`);
-      }
-      console.log("✅ Deploy script executed.");
-    } else {
-      console.warn("⚠️ No deploy.sh found. Skipping deploy script step.");
+    // Chọn môi trường để deploy: mặc định 'staging'
+    const targetEnv = process.env.DEPLOY_ENV || "staging";
+
+    if (!fs.existsSync("deploy.sh")) {
+      console.warn("⚠️ No deploy.sh found. Skipping deploy.");
+      return;
     }
+
+    console.log(`📦 Running deploy.sh (${targetEnv})...`);
+    const sh = process.platform === "win32" ? "bash" : "bash";
+    const res = spawnSync(sh, ["deploy.sh", targetEnv], { stdio: "inherit" });
+    if (res.status !== 0) throw new Error(`deploy.sh exited with code ${res.status}`);
+
+    console.log("✅ Deploy script executed.");
   } catch (err) {
     console.error("❌ Deploy failed:", err.message || err);
   }
 }
+
 
 
 (async () => {
