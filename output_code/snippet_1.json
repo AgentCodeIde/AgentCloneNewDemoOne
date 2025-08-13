@@ -1,0 +1,16 @@
+{
+  "name": "autodev-agent",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    // Các dependencies của bạn
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
+  }
+}
