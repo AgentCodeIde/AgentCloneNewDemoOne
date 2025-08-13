@@ -1,16 +1,17 @@
-# version: "3.8"
+
+version: "3.8"
+
 services:
   db:
     image: postgres:15
     environment:
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass # Gợi ý: Dùng file .env cho bảo mật
+      POSTGRES_PASSWORD: pass
       POSTGRES_DB: mydb
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-    # Thêm healthcheck để kiểm tra khi nào Postgres thực sự sẵn sàng
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
       interval: 5s
@@ -22,17 +23,60 @@ services:
     working_dir: /workspace
     volumes:
       - ../:/workspace:cached
-    command: bash -lc "chmod +x /workspace/sandbox/tests/run_tests.sh && /workspace/sandbox/tests/run_tests.sh"
-    # Sửa depends_on để đợi db thực sự healthy
+    command: bash -lc "node /workspace/sandbox/server.js & chmod +x /workspace/sandbox/tests/run_tests.sh && /workspace/sandbox/tests/run_tests.sh"
+    ports:
+      - "3000:3000"
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3000/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 12
+      start_period: 10s
 
 volumes:
   pgdata:
 
 
+################
 
+
+# # version: "3.8"
+# services:
+#   db:
+#     image: postgres:15
+#     environment:
+#       POSTGRES_USER: user
+#       POSTGRES_PASSWORD: pass # Gợi ý: Dùng file .env cho bảo mật
+#       POSTGRES_DB: mydb
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - pgdata:/var/lib/postgresql/data
+#     # Thêm healthcheck để kiểm tra khi nào Postgres thực sự sẵn sàng
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 5
+
+#   runner:
+#     image: mcr.microsoft.com/devcontainers/universal:2-linux
+#     working_dir: /workspace
+#     volumes:
+#       - ../:/workspace:cached
+#     command: bash -lc "chmod +x /workspace/sandbox/tests/run_tests.sh && /workspace/sandbox/tests/run_tests.sh"
+#     # Sửa depends_on để đợi db thực sự healthy
+#     depends_on:
+#       db:
+#         condition: service_healthy
+
+# volumes:
+#   pgdata:
+
+#########################
 
 # # version: "3.8"
 # services:
