@@ -230,6 +230,40 @@ if (!task) {
   process.exit(1);
 }
 
+async function deployAfterPass() {
+  try {
+    console.log("🚀 Deploy step: committing and pushing code...");
+
+    await git.add(".");
+    // Commit “rỗng” sẽ không tạo nếu không có thay đổi — OK
+    try {
+      await git.commit(`Auto-deploy: ${new Date().toISOString()}`);
+    } catch (_) {}
+
+    // Branch mục tiêu
+    const DEPLOY_BRANCH = process.env.DEPLOY_BRANCH || "staging";
+
+    await git.push("origin", DEPLOY_BRANCH);
+    console.log(`✅ Code pushed to ${DEPLOY_BRANCH} branch.`);
+
+    // Nếu có script deploy tại root thì chạy
+    if (fs.existsSync("deploy.sh")) {
+      console.log("📦 Running deploy.sh...");
+      const sh = process.platform === "win32" ? "bash" : "bash";
+      const res = spawnSync(sh, ["deploy.sh"], { stdio: "inherit" });
+      if (res.status !== 0) {
+        throw new Error(`deploy.sh exited with code ${res.status}`);
+      }
+      console.log("✅ Deploy script executed.");
+    } else {
+      console.warn("⚠️ No deploy.sh found. Skipping deploy script step.");
+    }
+  } catch (err) {
+    console.error("❌ Deploy failed:", err.message || err);
+  }
+}
+
+
 (async () => {
   try {
     console.log("🚀 AutoDev Agent bắt đầu với yêu cầu:", task);
@@ -262,6 +296,8 @@ if (!task) {
     const autoFixResult = await autoFixLoop(5);
     if (autoFixResult.success) {
       console.log("✅ All tests passed (after auto-fix).");
+      await deployAfterPass();     // <--- THÊM DÒNG NÀY
+
     } else {
       console.error("❌ Auto-fix failed:", autoFixResult.reason);
       process.exit(1);
