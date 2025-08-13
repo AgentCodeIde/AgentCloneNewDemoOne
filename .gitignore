@@ -3,3 +3,5 @@ sandbox/**/node_modules
 .env
 *.log
 .DS_Store
+# Thêm dòng .env vào cuối file .gitignore
+echo ".env" >> .gitignore
