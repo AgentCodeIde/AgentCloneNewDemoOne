@@ -1,0 +1,87 @@
+[
+  {
+    "milestone": "Tách Orchestrator và Sub-Agent",
+    "tasks": [
+      {
+        "title": "Tạo module orchestrator",
+        "description": "Viết hàm orchestrateTasks(taskDescription) đọc output JSON từ plan model và gọi sub-agent cho từng task. Orchestrator chịu trách nhiệm phân chia milestone và gọi tuần tự hoặc song song.",
+        "expected_outputs": ["src/orchestrator.js"]
+      },
+      {
+        "title": "Tạo module sub-agent",
+        "description": "Viết hàm runSubAgent(task) nhận task JSON (title, description, expected_outputs), gọi model code, lưu file và chạy test cho riêng task đó.",
+        "expected_outputs": ["src/subAgent.js"]
+      },
+      {
+        "title": "Tích hợp orchestrator vào agent.js",
+        "description": "Chỉnh sửa agent.js để khi có plan JSON, agent gọi orchestrator thay vì gọi generateCodeManifestFirst một lần duy nhất.",
+        "expected_outputs": ["agent.js"]
+      }
+    ]
+  },
+  {
+    "milestone": "Thêm vòng lặp sửa lỗi tự động",
+    "tasks": [
+      {
+        "title": "Viết logic loop sửa lỗi",
+        "description": "Sau khi sub-agent chạy test, nếu fail, feed lại log lỗi + snippet code vào model để sinh bản sửa. Lặp tối đa MAX_ITER (ví dụ 5).",
+        "expected_outputs": ["src/subAgent.js"]
+      },
+      {
+        "title": "Cập nhật parser lỗi",
+        "description": "Viết hàm extractErrorContext(log) để lấy phần stack trace và tên file liên quan từ log test.",
+        "expected_outputs": ["src/utils/errorParser.js"]
+      }
+    ]
+  },
+  {
+    "milestone": "Tối ưu context (Selective Retrieval)",
+    "tasks": [
+      {
+        "title": "Thêm hệ thống index code",
+        "description": "Dùng thư viện vector search (VD: langchain + chromadb) để index toàn bộ file code theo embedding. Lưu metadata path + nội dung.",
+        "expected_outputs": ["src/context/indexer.js"]
+      },
+      {
+        "title": "Tìm context liên quan khi sửa lỗi",
+        "description": "Dựa vào errorParser, query index để lấy các file liên quan và gửi vào prompt sửa lỗi thay vì gửi toàn bộ code.",
+        "expected_outputs": ["src/context/retriever.js"]
+      }
+    ]
+  },
+  {
+    "milestone": "Thêm Tool API cho model",
+    "tasks": [
+      {
+        "title": "Xây dựng API read_file/write_file",
+        "description": "Viết các hàm cho phép model yêu cầu đọc hoặc ghi file qua prompt đặc biệt, agent parse và thực thi.",
+        "expected_outputs": ["src/tools/fileOps.js"]
+      },
+      {
+        "title": "Xây dựng API run_command",
+        "description": "Viết hàm cho phép model yêu cầu chạy lệnh shell trong sandbox và trả về stdout/stderr.",
+        "expected_outputs": ["src/tools/commandRunner.js"]
+      },
+      {
+        "title": "Xây dựng API search_code",
+        "description": "Viết hàm tìm kiếm chuỗi hoặc regex trong codebase và trả về kết quả cho model.",
+        "expected_outputs": ["src/tools/search.js"]
+      }
+    ]
+  },
+  {
+    "milestone": "Quản lý version và an toàn",
+    "tasks": [
+      {
+        "title": "Tạo branch mới mỗi lần chạy",
+        "description": "Trước khi orchestrator bắt đầu, tạo branch mới dạng autodev/<timestamp>. Commit code từng bước vào branch này.",
+        "expected_outputs": ["src/utils/gitHelper.js"]
+      },
+      {
+        "title": "Thử nghiệm trong sandbox riêng",
+        "description": "Copy code đang làm vào thư mục sandbox riêng hoặc container mount riêng để tránh ghi đè code chính.",
+        "expected_outputs": ["sandbox/Dockerfile", "sandbox/docker-compose.yml"]
+      }
+    ]
+  }
+]

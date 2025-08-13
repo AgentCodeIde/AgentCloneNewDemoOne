@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  agent:
+    build: .
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    depends_on:
+      - model
+
+  model:
+    image: openai/gpt-4
+    environment:
+      - API_KEY=your_openai_api_key_here

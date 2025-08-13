@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user        # Tên user bạn dùng kết nối DB
+      POSTGRES_PASSWORD: pass    # Mật khẩu user
+      POSTGRES_DB: mydb          # Tên database tạo sẵn
+    ports:
+      - "5432:5432"              # Map port 5432 container ra host để kết nối ngoài
+    volumes:
+      - pgdata:/var/lib/postgresql/data   # Lưu dữ liệu ra volume ngoài để không mất khi container dừng
+
+  runner:
+    image: mcr.microsoft.com/devcontainers/universal:2-linux
+    working_dir: /workspace
+    volumes:
+      - ../:/workspace:cached
+    command: bash -lc "chmod +x /workspace/sandbox/tests/run_tests.sh && /workspace/sandbox/tests/run_tests.sh"
+    depends_on:
+      - db                       # Đảm bảo db chạy trước runner
+    network_mode: "bridge"        # Kích hoạt mạng để runner có thể kết nối db
+
+volumes:
+  pgdata:

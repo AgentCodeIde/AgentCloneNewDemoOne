@@ -1,0 +1,49 @@
+{
+  "continue.models": [
+    {
+      "title": "Qwen Coder Local",
+      "provider": "openai",
+      "model": "qwen2.5-coder-14b-instruct",
+      "apiBase": "http://26.198.200.177:1234/v1",
+      "apiKey": "none"
+    },
+    {
+      "title": "GPT-OSS Local",
+      "provider": "openai",
+      "model": "gpt-oss-20b",
+      "apiBase": "http://26.198.200.177:1234/v1",
+      "apiKey": "none"
+    }
+  ],
+  "modelSettings": {
+    "openai/gpt-oss-20b": {
+      "contextLength": 4096,
+      "gpuOffload": 20,              
+      "cpuThreads": 18,              
+      "evalBatchSize": 256,
+      "ropeFreqBase": false,
+      "ropeFreqScale": false,
+      "offloadKVCache": true,
+      "keepInMemory": true,
+      "tryMmap": true,
+      "seed": null,
+      "numExperts": 4,
+      "flashAttention": true,
+      "kvQuantization": true
+    },
+    "openai/qwen2.5-coder-14b-instruct": {
+      "contextLength": 8192,
+      "gpuOffload": 20,              
+      "cpuThreads": 18,
+      "evalBatchSize": 192,
+      "ropeFreqBase": false,
+      "ropeFreqScale": false,
+      "offloadKVCache": true,
+      "keepInMemory": true,
+      "tryMmap": true,
+      "seed": null,
+      "flashAttention": false,       
+      "kvQuantization": false
+    }
+  }
+}
