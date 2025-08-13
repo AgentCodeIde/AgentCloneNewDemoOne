@@ -23,7 +23,8 @@ services:
     working_dir: /workspace
     volumes:
       - ../:/workspace:cached
-    command: bash -lc "node /workspace/sandbox/server.js & chmod +x /workspace/sandbox/tests/run_tests.sh && /workspace/sandbox/tests/run_tests.sh"
+    # Sửa lại đường dẫn cho đúng
+    command: bash -lc "node /workspace/health/backend_agent/server.js & chmod +x /workspace/sandbox/tests/run_tests.sh && /workspace/sandbox/tests/run_tests.sh"
     ports:
       - "3000:3000"
     depends_on:
