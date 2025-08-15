@@ -1,0 +1,1 @@
+#!/bin/bash\nset -e\necho 'Running Jest tests...'\nnpm test
